@@ -14,7 +14,6 @@ offline_message={'John':[], 'Marry':[], 'Lydia':[]}
 online_user = {}
 
 
-
 def Account(id):
     file_n = id + ".txt"
     logging.basicConfig(format = '%(asctime)s: %(message)s',
@@ -25,6 +24,7 @@ def Account(id):
 
 def list_message(connection,id):
     txtname=id+".txt"
+    message=""
     if not os.path.exists(txtname):
         f=open(txtname,"w")
         f.close()
@@ -34,15 +34,18 @@ def list_message(connection,id):
          line = fileIN.readline()
          while line:
              line=line.strip()
+	     print line
              if line in online_user:
-                 message = line+" is online"
-		 connection.sendall(pickle.dumps(message))
+		 print "online"
+                 message = message+line+" is online\n"
+		 #connection.sendall(pickle.dumps(message))		 
              else:
-                 message = line+" is offline"
-		 connection.sendall(pickle.dumps(message))
+		 print "offline"
+                 message = message+line+" is offline\n"
+		 #connection.sendall(pickle.dumps(message))
              line=fileIN.readline()
-    for i in online_user:
- 	 connection.sendall(pickle.dumps(i))
+         connection.sendall(pickle.dumps(message))
+    	 fileIN.close()
 
 
 def send_message(connection, from_user, to_user, message):
@@ -95,6 +98,30 @@ def logout(connection, id):
     connection.sendall(pickle.dumps("logout"))
     online_user.pop(id)
 
+def addfriend(id,fdname):
+    txtname=id+".txt"
+    f=open(txtname,"a")
+    f.write(fdname+"\n")
+    f.close()
+
+def delfriend(id,fdname):
+    txtname=id+".txt"
+    f=open(txtname,"r")
+    line = f.readline()
+    fdlist = []
+    while  line:
+        line=line.strip()
+	fdlist.append(line)
+        line = f.readline()
+    if fdname in fdlist:
+	fdlist.remove(fdname)
+	f.close()
+    os.remove(txtname)
+    f=open(txtname,"w")
+    for i in fdlist:
+        f.write(i +"\n")
+    #f.write(fdname+"\n")
+    f.close()
 
 def handle_request(connection):
     (login_success, id) = loginCheck(connection)
@@ -105,7 +132,6 @@ def handle_request(connection):
             message_split = message.split(' ')
             message_len = len(message_split)
             inst = message_split[0].lower()
-            print("list heeeeeee")
             if inst == "list":
 		 list_message(connection,id)
             elif inst == "send" and message_len == 3:
@@ -116,6 +142,12 @@ def handle_request(connection):
                 broadcast_message(connection, id, message_split[1])
             elif inst == "logout" and message_len == 1:
                 logout(connection, id)
+	    elif inst == "addfriend":
+		addfriend(id,message_split[1])#TOM
+		list_message(connection,id)
+	    elif inst == "delfriend":
+		delfriend(id,message_split[1])#TOM
+		list_message(connection,id)
             else:
                 connection.sendall(pickle.dumps("Error!"))
                 print("Error!")
