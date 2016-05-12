@@ -26,11 +26,12 @@ def updateCheck(client_socket):
         print(message)
 
 def login(client_socket):
-    id = getpass(prompt="Account : ")
+    id = raw_input("Account : ")
     pw = getpass(prompt="Password : ")
-    client_socket.sendall(pickle.dumps((id, pw)))
+    message = id + ':' + pw
+    client_socket.sendall(message)
     
-    if client_socket.recv(BUF_SIZE) == b"success~":
+    if client_socket.recv(1) :
         updateCheck(client_socket)
         return (True, id)
     else:
@@ -59,7 +60,7 @@ def handle_recv(client_socket):
 def handle_send(client_socket, id):
     while True:
         message = input()
-        message_split = message.split(' ')
+        message_split = message.split(' ') 
 
         if message_split[0] == "exit":
             sys.exit()

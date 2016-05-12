@@ -54,17 +54,20 @@ def updateCheck(connection, id):
 
 
 def loginCheck(connection):
-    id, pw = pickle.loads(connection.recv(BUF_SIZE))
+    message = connection.recv(BUF_SIZE)
+    id= message.split(':')[0]
+    pw= message.split(':')[1]
     if id in accounts and accounts[id] == pw:
         print("{} login success!".format(id))
-        connection.sendall(b"success~")
+        connection.sendall("1")
+	print("success~")
         online_user[id] = connection
         updateCheck(connection, id)
         return (True, id)
 
     else :
         print("{} login fail!".format(id))
-        connection.sendall(b"Login fail~")
+        connection.sendall("0")
         connection.close()
     pass
 
