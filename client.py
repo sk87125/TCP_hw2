@@ -40,7 +40,7 @@ def login(client_socket):
 def talkMode(client_socket, to_user):
     loop = True
     while loop:
-        message = input()
+        message = raw_input()
         
         if message == "exit":
             break
@@ -59,8 +59,8 @@ def handle_recv(client_socket):
 
 def handle_send(client_socket, id):
     while True:
-        message = input()
-        message_split = message.split(' ') 
+        message = raw_input()
+        message_split = message.split(":") 
 
         if message_split[0] == "exit":
             sys.exit()
@@ -71,6 +71,7 @@ def handle_send(client_socket, id):
             sys.exit()
             os.exit()
         else:
+            print "i am here"
             client_socket.sendall(pickle.dumps(message))
 
 def main():
