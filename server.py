@@ -4,6 +4,7 @@ import pickle
 import logging
 from threading import Thread
 import NetworkConnector
+import os
 
 
 BUF_SIZE = 32768
@@ -22,9 +23,26 @@ def Account(id):
                         filemode = 'w')
 
 
-def list_message(connection):
+def list_message(connection,id):
+    txtname=id+".txt"
+    if not os.path.exists(txtname):
+        f=open(txtname,"w")
+        f.close()
+	print "build txt success"
+    else:
+         fileIN = open(txtname,"r")
+         line = fileIN.readline()
+         while line:
+             line=line.strip()
+             if line in online_user:
+                 message = line+" is online"
+		 connection.sendall(pickle.dumps(message))
+             else:
+                 message = line+" is offline"
+		 connection.sendall(pickle.dumps(message))
+             line=fileIN.readline()
     for i in online_user:
-        connection.sendall(pickle.dumps(i))
+ 	 connection.sendall(pickle.dumps(i))
 
 
 def send_message(connection, from_user, to_user, message):
@@ -87,9 +105,9 @@ def handle_request(connection):
             message_split = message.split(' ')
             message_len = len(message_split)
             inst = message_split[0].lower()
-            
+            print("list heeeeeee")
             if inst == "list":
-                list_message(connection)
+		 list_message(connection,id)
             elif inst == "send" and message_len == 3:
                 send_message(connection, id, message_split[1], message_split[2])
             elif inst == "talk" and message_len == 2:

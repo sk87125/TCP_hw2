@@ -24,7 +24,6 @@ def updateCheck(client_socket):
         pass
     else:
         print(message)
-
 def login(client_socket):
     id = raw_input("Account : ")
     pw = getpass(prompt="Password : ")
@@ -71,7 +70,6 @@ def handle_send(client_socket, id):
             sys.exit()
             os.exit()
         else:
-            print "i am here"
             client_socket.sendall(pickle.dumps(message))
 
 def main():
