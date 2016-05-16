@@ -122,19 +122,23 @@ def delfriend(id,fdname):
         f.write(i +"\n")
     #f.write(fdname+"\n")
     f.close()
-def sendfile(connection,id,to_user,file_name,file_data):
+
+def RecvData(connection,id,to_user,file_name,file_data):
     # Receive file info
     fw = open(file_name, 'wb')
-   # print "Receiving data..."
-   # while True:
-   #     file_data = connection.recv(1024)
-   #     if not file_data:
-#	    break
     fw.write(file_data)
     fw.close()
 
-
-
+def SendData(to_user, file_name):
+    message = "sendfile "+to_user+" "+file_name+" "
+    fr = open(file_name, 'rb')
+    data = fr.read(1024)
+    print data
+    fr.close()
+    message +=data
+    print message
+    print "Send success!"
+    online_user[to_user].sendall(pickle.dumps(message))
 
 
 
@@ -166,10 +170,11 @@ def handle_request(connection):
 		delfriend(id,message_split[1])#TOM
 		list_message(connection,id)
 	    elif inst == "sendfile":
-		sendfile(connection,id,message_split[1],message_split[2],message_split[3])
+		RecvData(connection,id,message_split[1],message_split[2],message_split[3])
+		SendData(message_split[1],message_split[2])
             else:
-                connection.sendall(pickle.dumps("md fucker!"))
-                print("md fucker!")
+                connection.sendall(pickle.dumps("error"))
+                print("error")
 
 
 def handle_conversation(connection, address):

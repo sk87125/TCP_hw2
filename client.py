@@ -20,8 +20,13 @@ def SendData(client_socket, to_user, file_name):
     print message
     print "Send success!"
     client_socket.sendall(pickle.dumps(message))
-    
 
+def RecvData(to_user,file_name,file_data):
+    # Receive file info
+    fw = open(file_name, 'wb')
+    fw.write(file_data)
+    fw.close()    
+    print "Receive "+file_name
 
 def Account(id):
     fn = id + ".txt"
@@ -36,6 +41,7 @@ def updateCheck(client_socket):
         pass
     else:
         print(message)
+
 def login(client_socket):
     id = raw_input("Account : ")
     pw = getpass(prompt="Password : ")
@@ -62,9 +68,12 @@ def talkMode(client_socket, to_user):
 def handle_recv(client_socket):
     while True:
         message = pickle.loads(client_socket.recv(BUF_SIZE))
+	message_split = message.split(' ')
         if message == 'logout':
             sys.exit()
             os.exit()
+	elif message_split[0]=="sendfile":
+	    RecvData(message_split[1],message_split[2],message_split[3])
         else:    
             print(message)
 
