@@ -10,6 +10,18 @@ import NetworkConnector
 
 BUF_SIZE = 32768
 
+def SendData(client_socket, to_user, file_name):
+    message = "sendfile "+to_user+" "+file_name+" "
+    fr = open(file_name, 'rb')
+    data = fr.read(1024)
+    print data
+    fr.close()
+    message +=data
+    print message
+    print "Send success!"
+    client_socket.sendall(pickle.dumps(message))
+    
+
 
 def Account(id):
     fn = id + ".txt"
@@ -65,6 +77,8 @@ def handle_send(client_socket, id):
             sys.exit()
         elif message_split[0] == "talk" and len(message_split) == 2:
             talkMode(client_socket, message_split[1])
+	elif message_split[0]=="sendfile":
+	    SendData(client_socket, message_split[1], message_split[2])
         elif message_split[0] == "logout" and len(message_split) == 1:
             client_socket.sendall(pickle.dumps(message))
             sys.exit()

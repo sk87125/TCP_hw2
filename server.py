@@ -122,6 +122,21 @@ def delfriend(id,fdname):
         f.write(i +"\n")
     #f.write(fdname+"\n")
     f.close()
+def sendfile(connection,id,to_user,file_name,file_data):
+    # Receive file info
+    fw = open(file_name, 'wb')
+   # print "Receiving data..."
+   # while True:
+   #     file_data = connection.recv(1024)
+   #     if not file_data:
+#	    break
+    fw.write(file_data)
+    fw.close()
+
+
+
+
+
 
 def handle_request(connection):
     (login_success, id) = loginCheck(connection)
@@ -129,8 +144,10 @@ def handle_request(connection):
     if login_success:
         while True:
             message = pickle.loads(connection.recv(BUF_SIZE))
+	    print message
+            #file_data = message
             message_split = message.split(' ')
-            message_len = len(message_split)
+	    message_len = len(message_split)
             inst = message_split[0].lower()
             if inst == "list":
 		 list_message(connection,id)
@@ -148,9 +165,11 @@ def handle_request(connection):
 	    elif inst == "delfriend":
 		delfriend(id,message_split[1])#TOM
 		list_message(connection,id)
+	    elif inst == "sendfile":
+		sendfile(connection,id,message_split[1],message_split[2],message_split[3])
             else:
-                connection.sendall(pickle.dumps("Error!"))
-                print("Error!")
+                connection.sendall(pickle.dumps("md fucker!"))
+                print("md fucker!")
 
 
 def handle_conversation(connection, address):
